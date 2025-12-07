@@ -1,0 +1,62 @@
+import argparse, time
+
+def parse_input(f):
+  return [[int(c) for c in row.strip()] for row in f]
+
+def joltage(bank, n):
+  digits = []
+
+  prev_idx = -1
+  for i in range(n):
+    d = float('-inf')
+    temp_idx = prev_idx
+    max_idx = n - (i + 1)
+    
+    for i in range(prev_idx + 1, len(bank) - max_idx):
+      di = bank[i]
+      if di > d:
+        d = di
+        temp_idx = i
+
+    digits.append(str(d))
+    prev_idx = temp_idx
+
+  return int("".join(digits))
+        
+def part_one(f) -> int:
+  banks = parse_input(f)
+  return sum(joltage(b, 2) for b in banks)
+
+def part_two(f) -> int:
+  banks = parse_input(f)
+  return sum(joltage(b, 12) for b in banks)
+
+if __name__ == "__main__":  
+  parser = argparse.ArgumentParser()
+  parser.add_argument("parts", nargs="*")
+  parser.add_argument("-t", "--test", action=argparse.BooleanOptionalAction)
+  args = parser.parse_args()
+  
+  file_name = "input_test.txt" if args.test else "input.txt"
+  f = open(file_name)
+  
+  run_pt_1 = not args.parts or "1" in args.parts
+  run_pt_2 = not args.parts or "2" in args.parts
+  
+  if run_pt_1:
+    start = time.perf_counter()
+    pt_1_result = part_one(f)
+    elapsed = (time.perf_counter() - start) * 1000 
+    
+    print("Part One:", pt_1_result, "(Ran in", round(elapsed, 8), "ms)")
+  
+  f.seek(0)
+  
+  if run_pt_2:
+    start = time.perf_counter()
+    pt_2_result = part_two(f)
+    elapsed = (time.perf_counter() - start) * 1000 
+    
+    print("Part Two:", pt_2_result, "(Ran in", round(elapsed, 8), "ms)")
+    
+  f.close()
